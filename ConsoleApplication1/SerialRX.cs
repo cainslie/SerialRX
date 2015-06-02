@@ -28,12 +28,12 @@ namespace SerialRX
             if (state.Offset == JoystickOffset.X)
             {
                 int xAxisPercent = GetAxisValuePercentage(65535, state.Value);
-                SetXVal(xAxisPercent);
                 __hasChanged = true;
             }
             if (state.Offset == JoystickOffset.Y)
             {
                 int yAxisPercent = GetAxisValuePercentage(65535, state.Value);
+                SetXVal(yAxisPercent);
                 __hasChanged = true;
             }
             else if (state.Offset == JoystickOffset.RotationZ)
@@ -42,7 +42,10 @@ namespace SerialRX
                 SetZVal(zAxisPercent);
                 __hasChanged = true;
             }
-            
+            //if (__hasChanged)
+            {
+                SendCommand(GetFinalValues());
+            }
         }
 
         static void SetupSerial()
@@ -67,11 +70,12 @@ namespace SerialRX
 
         static void SetXVal(int xVal)
         {
-            __xVal = xVal;
+            __xVal = (xVal - 50)*-1;
         }
 
         static void SetZVal(int zVal)
         {
+//            if (zVal < 0) { zVal = zVal + 50; }
             __zVal = zVal;
         }
 
@@ -89,13 +93,14 @@ namespace SerialRX
         {
             int left = GetXVal();
             int right = GetXVal();
+            Console.WriteLine("X:" + GetXVal() + " Z:" + GetZVal());
             if (GetZVal() > 50)
             {
-                left = left + GetZVal();
+                left = left + (GetZVal()-50);
             }
             if (GetZVal() < 50)
             {
-                right = right - GetZVal();
+                right = right + (50-GetZVal());
             }
             return left.ToString() + "|" + right.ToString();
         }
@@ -109,10 +114,6 @@ namespace SerialRX
             while (1==1) 
             {
                 joystickMonitor.PollJoystick(progress, _joystickMonitorCancellation.Token);
-                if (__hasChanged)
-                {
-                    SendCommand(GetFinalValues());
-                }
             }
             
         }
