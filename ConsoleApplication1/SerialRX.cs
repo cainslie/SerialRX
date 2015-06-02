@@ -7,7 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Net;
 using System.Threading;
-using SharpDX.DirectInput;
+using SharpDX.DirectInput; 
 
 namespace SerialRX
 {
