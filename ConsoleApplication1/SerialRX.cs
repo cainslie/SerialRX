@@ -42,9 +42,9 @@ namespace SerialRX
                 SetZVal(zAxisPercent);
                 __hasChanged = true;
             }
-            //if (__hasChanged)
+            if (__hasChanged)
             {
-                SendCommand(GetFinalValues());
+                SendCommand(GetFinalValues()+".");
             }
         }
 
@@ -57,15 +57,21 @@ namespace SerialRX
             serialPort.Handshake = Handshake.None;
 
             //**uncomment for live :)
-            //serialPort.Open();
-            //serialPort.Write("I");                                     //initialise device
+            serialPort.Open();
+            serialPort.WriteLine("I");                                     //initialise device
         }
 
         static void SendCommand(string command)
         {
             //**uncomment for live :)
-            //serialPort.Write(command);
+            serialPort.Write(command);
+            if (command == "0|0.") {
+                serialPort.Write(command);
+            }
             Console.WriteLine(command);
+
+            string msg = serialPort.ReadLine();
+            Console.WriteLine(msg);
         }
 
         static void SetXVal(int xVal)
@@ -91,9 +97,8 @@ namespace SerialRX
 
         static string GetFinalValues()
         {
-            int left = GetXVal();
-            int right = GetXVal();
-            Console.WriteLine("X:" + GetXVal() + " Z:" + GetZVal());
+            int left = GetXVal()*2;
+            int right = GetXVal()*2;
             if (GetZVal() > 50)
             {
                 left = left + (GetZVal()-50);
